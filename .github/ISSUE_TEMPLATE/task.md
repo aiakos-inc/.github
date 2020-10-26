@@ -1,7 +1,7 @@
 ---
 name: タスク
 about: タスクを作成する
-title: ':ticket:'
+title: ''
 labels: ''
 assignees: ''
 

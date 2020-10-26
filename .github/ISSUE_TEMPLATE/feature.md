@@ -1,7 +1,7 @@
 ---
 name: 機能要望
 about: 新しい機能を要望する
-title: ':sparkles:'
+title: ''
 labels: ''
 assignees: ''
 
