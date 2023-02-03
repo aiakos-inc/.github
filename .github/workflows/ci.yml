@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  semver:
+    uses: ./.github/workflows/semver.yml
+    with:
+      dry_run: true
+      bump: prepatch
+    secrets: inherit

@@ -1,0 +1,53 @@
+name: SemVer
+
+on:
+  workflow_call:
+    inputs:
+      dry_run:
+        description: "true, false"
+        required: false
+        type: boolean
+        default: false
+      bump:
+        description: "major, premajor, minor, preminor, patch, prepatch"
+        required: true
+      rc:
+        required: false
+        type: boolean
+        default: false
+    outputs:
+      version:
+        description: "0.0.0, 0.0.0-rc.0"
+        value: ${{ jobs.semver.outputs.version }}
+      version_tag:
+        description: "v0.0.0, v0.0.0-rc.0"
+        value: ${{ jobs.semver.outputs.version_tag }}
+
+jobs:
+  semver:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.semver.outputs.version }}
+      version_tag: ${{ steps.semver.outputs.version_tag }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+      - run: |
+          CURRENT_VERSION="$(git tag --sort=-v:refname | head -1)"
+          if [[ "$CURRENT_VERSION" == "" ]]; then
+            CURRENT_VERSION="v0.0.0"
+          fi
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+      - id: semver
+        run: |
+          VERSION=$(npx semver ${{ env.CURRENT_VERSION }} -i ${{ inputs.bump }} --preid rc)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version_tag=v$VERSION" >> $GITHUB_OUTPUT
+      - if: ${{ !inputs.dry_run || inputs.dry_run == 'false' }}
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git tag ${{ steps.semver.outputs.version_tag }}
+          git push origin ${{ steps.semver.outputs.version_tag }}
