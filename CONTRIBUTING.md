@@ -20,25 +20,6 @@
 8. 「Submit new issue」で Issue を登録
 9. Issue 番号（ `#番号` ）が作成されるので覚えておく
 
-### ブランチの作成例
-
-開発中の機能追加例
-
-```bash
-# develop ブランチにいることを確認
-$ git branch
-* develop
-
-# develop ブランチにいない場合
-$ git checkout develop
-
-# ブランチ feature/1 ブランチを作成し、作成したブランチへ移動する
-$ git checkout -b feature/1
-# ローカルでコミットを行う
-# 作成したブランチをリモートリポジトリへ push
-$ git push origin feature/1
-```
-
 ## Pull Request の作り方
 
 1. Pull requests 作成画面から「New pull request」をクリック
