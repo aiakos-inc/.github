@@ -11,10 +11,7 @@ on:
       bump:
         description: "major, premajor, minor, preminor, patch, prepatch"
         required: true
-      rc:
-        required: false
-        type: boolean
-        default: false
+        type: string
     outputs:
       version:
         description: "0.0.0, 0.0.0-rc.0"
@@ -34,17 +31,15 @@ jobs:
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v3
-      - run: |
+      - id: semver
+        run: |
           CURRENT_VERSION="$(git tag --sort=-v:refname | head -1)"
           if [[ "$CURRENT_VERSION" == "" ]]; then
             CURRENT_VERSION="v0.0.0"
           fi
-          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
-      - id: semver
-        run: |
-          VERSION=$(npx semver ${{ env.CURRENT_VERSION }} -i ${{ inputs.bump }} --preid rc)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "version_tag=v$VERSION" >> $GITHUB_OUTPUT
+          VERSION=$(npx semver "$CURRENT_VERSION" -i ${{ inputs.bump }} --preid rc)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "version_tag=v$VERSION" >> "$GITHUB_OUTPUT"
       - if: ${{ !inputs.dry_run || inputs.dry_run == 'false' }}
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
