@@ -1,6 +1,6 @@
 # 概要
 
-Fixes #(issue)
+Fixes #
 
 ## 詳細
 
