@@ -1,7 +1,7 @@
 name: GitHub App Token
 inputs:
   app_id:
-    description: "secrets.APP_ID"
+    description: "vars.APP_ID"
     required: true
   private_key:
     description: "secrets.PRIVATE_KEY"
@@ -9,10 +9,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - id: generate_token
-      uses: getsentry/action-github-app-token@v2
+    - id: app-token
+      uses: actions/create-github-app-token@v1
       with:
-        app_id: ${{ inputs.app_id }}
-        private_key: ${{ inputs.private_key }}
-    - run: git config --global url."https://x-access-token:${{ steps.generate_token.outputs.token }}@github.com".insteadOf "https://github.com"
+        app-id: ${{ inputs.app_id }}
+        private-key: ${{ inputs.private_key }}
+    - run: git config --global url."https://x-access-token:${{ steps.app-token.outputs.token }}@github.com".insteadOf "https://github.com"
       shell: bash

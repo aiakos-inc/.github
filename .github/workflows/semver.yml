@@ -27,12 +27,11 @@ jobs:
       version: ${{ steps.semver.outputs.version }}
       version_tag: ${{ steps.semver.outputs.version_tag }}
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
       - id: semver
         run: |
+          git fetch --tag
           CURRENT_VERSION="$(git tag --sort=-v:refname | head -1)"
           if [[ "$CURRENT_VERSION" == "" ]]; then
             CURRENT_VERSION="v0.0.0"
