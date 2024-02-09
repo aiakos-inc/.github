@@ -14,5 +14,6 @@ runs:
       with:
         app-id: ${{ inputs.app_id }}
         private-key: ${{ inputs.private_key }}
+        owner: ${{ github.repository_owner }}
     - run: git config --global url."https://x-access-token:${{ steps.app-token.outputs.token }}@github.com".insteadOf "https://github.com"
       shell: bash
