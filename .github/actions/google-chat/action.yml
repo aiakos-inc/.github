@@ -1,0 +1,76 @@
+name: Google Chat
+
+inputs:
+  webhook-url:
+    description: "Google Chat Webhook URL"
+    required: true
+    type: string
+  status:
+    description: "success or failure or cancelled"
+    default: "success"
+    type: string
+  title:
+    description: "タイトル"
+    type: string
+  subtitle:
+    description: "サブタイトル"
+    type: string
+  message:
+    description: "メッセージ"
+    type: string
+  url:
+    description: "URL"
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - id: url
+      run: |
+        echo "url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
+      shell: bash
+    - run: |
+        jq -n '{
+          "cardsV2": [
+            {
+              "card": {
+                "header": {
+                  "title": "${{ inputs.title && inputs.title || github.repository }}",
+                  "subtitle": "${{ inputs.subtitle && inputs.subtitle || github.job }}",
+                  "imageUrl": "https://octodex.github.com/images/original.png"
+                },
+                "sections": [
+                  {
+                    "widgets": [
+                      {
+                        "decoratedText": {
+                          "text": "<font color=\"${{ (inputs.status == 'success' && '#31AF91') || '#FF0B0B' }}\"><b>${{ inputs.status }}</b></font>"
+                        }
+                      },
+                      {
+                        "textParagraph": {
+                          "text": "${{ inputs.message }}"
+                        }
+                      },
+                      {
+                        "buttonList": {
+                          "buttons": [
+                            {
+                              "text": "Go to ${{ github.job }}",
+                              "onClick": {
+                                "openLink": {
+                                  "url": "${{ inputs.url && inputs.url || steps.url.outputs.url }}"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }' | curl -X POST -H "Content-Type: application/json" -d @- "${{ inputs.webhook-url }}"
+      shell: bash
