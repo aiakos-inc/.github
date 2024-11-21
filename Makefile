@@ -18,6 +18,10 @@ act_token:
 act_semver:
 	act -W .github/workflows/ci.yml -j semver workflow_dispatch
 
+.PHONY: act_actionlint
+act_actionlint: ## act act_actionlint
+	act -s PRIVATE_KEY="$$(< private-key.pem)" -W .github/workflows/ci.yml -j actionlint workflow_dispatch
+
 .PHONY: act_notify
 act_notify: ## act act_notify
 	act -s PRIVATE_KEY="$$(< private-key.pem)" -W .github/workflows/notify.yml -j notify --input status=failure workflow_dispatch

@@ -1,4 +1,6 @@
 name: GitHub App Token
+description: "Create a GitHub App token for the repository"
+
 inputs:
   app_id:
     description: "vars.APP_ID"
@@ -6,6 +8,7 @@ inputs:
   private_key:
     description: "secrets.PRIVATE_KEY"
     required: true
+
 runs:
   using: "composite"
   steps:

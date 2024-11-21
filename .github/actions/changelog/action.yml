@@ -1,0 +1,44 @@
+name: Changelog
+description: "Get the changelog of the latest release or a specific tag"
+
+inputs:
+  tag:
+    description: "Tag name"
+    type: string
+
+outputs:
+  changelog:
+    description: "Changelog"
+    value: ${{ steps.changelog.outputs.changelog }}
+  tag_name:
+    description: "Tag name"
+    value: ${{ steps.changelog.outputs.tag_name }}
+  html_url:
+    description: "HTML URL"
+    value: ${{ steps.changelog.outputs.html_url }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: changelog
+      uses: actions/github-script@v7
+      env:
+        TAG: ${{ inputs.tag }}
+      with:
+        script: |
+          try {
+            const { TAG } = process.env;
+            const { data } = TAG ? await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag: TAG
+            }) : await github.rest.repos.getLatestRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo
+            });
+            core.setOutput('tag_name', data.tag_name);
+            core.setOutput('html_url', data.html_url);
+            core.setOutput('changelog', data.body);
+          } catch (error) {
+            core.setFailed(error.message);
+          }

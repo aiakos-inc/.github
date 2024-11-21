@@ -1,4 +1,5 @@
 name: Google Chat
+description: "Send a message to Google Chat"
 
 inputs:
   webhook-url:

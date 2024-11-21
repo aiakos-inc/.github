@@ -19,29 +19,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - if: inputs.status == 'success'
-        uses: actions/github-script@v7
-        id: release
-        with:
-          script: |
-            const repo = context.repo;
-            const { data } = await github.rest.repos.getLatestRelease({
-                owner: repo.owner,
-                repo: repo.repo
-            });
-            core.setOutput('body', data.body);
-            core.setOutput('html_url', data.html_url);
-            core.setOutput('tag_name', data.tag_name);
-            return data;
+        id: changelog
+        uses: ./.github/actions/changelog
       - if: inputs.status == 'success'
         uses: ./.github/actions/google-chat
         with:
           webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
-          title: "${{ github.repository }} ${{ steps.release.outputs.tag_name }}"
-          message: "${{ steps.release.outputs.body }}"
-          url: "${{ steps.release.outputs.html_url }}"
-          status: "${{ job.status }}"
+          title: "${{ github.repository }} ${{ steps.changelog.outputs.tag_name }}"
+          message: "${{ steps.changelog.outputs.changelog }}"
+          url: "${{ steps.changelog.outputs.html_url }}"
+          status: "${{ inputs.status }}"
       - if: inputs.status == 'failure'
         uses: ./.github/actions/google-chat
         with:
           webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
-          status: "${{ job.status }}"
+          status: "${{ inputs.status }}"
