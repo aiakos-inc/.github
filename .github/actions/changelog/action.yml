@@ -20,12 +20,15 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - run: npm install remove-markdown
+      shell: bash
     - id: changelog
       uses: actions/github-script@v7
       env:
         TAG: ${{ inputs.tag }}
       with:
         script: |
+          const removeMd = require('remove-markdown');
           try {
             const { TAG } = process.env;
             const { data } = TAG ? await github.rest.repos.getReleaseByTag({
@@ -36,9 +39,10 @@ runs:
                 owner: context.repo.owner,
                 repo: context.repo.repo
             });
+            const plainText = removeMd(data.body);
             core.setOutput('tag_name', data.tag_name);
             core.setOutput('html_url', data.html_url);
-            core.setOutput('changelog', data.body);
+            core.setOutput('changelog', plainText);
           } catch (error) {
             core.setFailed(error.message);
           }
