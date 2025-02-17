@@ -1,0 +1,40 @@
+name: Google Chat
+
+on:
+  workflow_dispatch:
+    inputs:
+      status:
+        description: "Status"
+        required: true
+        default: "success"
+        options:
+          - success
+          - failure
+          - cancelled
+        type: choice
+      title:
+        description: "タイトル"
+        type: string
+      subtitle:
+        description: "サブタイトル"
+        type: string
+      message:
+        description: "メッセージ"
+        type: string
+      url:
+        description: "URL"
+        type: string
+
+jobs:
+  google-chat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/google-chat
+        with:
+          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+          status: "${{ inputs.status }}"
+          title: "${{ inputs.title }}"
+          subtitle: "${{ inputs.subtitle }}"
+          message: "${{ inputs.message }}"
+          url: "${{ inputs.url }}"

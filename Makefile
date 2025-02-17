@@ -25,3 +25,13 @@ act_actionlint: ## act act_actionlint
 .PHONY: act_notify
 act_notify: ## act act_notify
 	act -s PRIVATE_KEY="$$(< private-key.pem)" -W .github/workflows/notify.yml -j notify --input status=failure workflow_dispatch
+
+.PHONY: act_google_chat
+act_google_chat: ## act act_google_chat
+	act -s PRIVATE_KEY="$$(< private-key.pem)" -W .github/workflows/google-chat.yml -j google-chat \
+		--input status=success \
+		--input title='"タイトル"' \
+		--input subtitle='"サブタイトル"' \
+		--input message='revert: Revert "fix: リバート"' \
+		--input url='https://aiakos.co.jp/' \
+		workflow_dispatch

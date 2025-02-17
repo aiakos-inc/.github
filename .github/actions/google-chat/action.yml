@@ -31,13 +31,20 @@ runs:
         echo "url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
       shell: bash
     - run: |
-        jq -n '{
+        jq -n \
+        --arg status "<font color=\"${COLOR}\"><b>${STATUS}</b></font>" \
+        --arg title "${TITLE}" \
+        --arg subtitle "${SUBTITLE}" \
+        --arg message "${MESSAGE}" \
+        --arg job "${JOB}" \
+        --arg url "${URL}" \
+        '{
           "cardsV2": [
             {
               "card": {
                 "header": {
-                  "title": "${{ inputs.title && inputs.title || github.repository }}",
-                  "subtitle": "${{ inputs.subtitle && inputs.subtitle || github.job }}",
+                  "title": $title,
+                  "subtitle": $subtitle,
                   "imageUrl": "https://octodex.github.com/images/original.png"
                 },
                 "sections": [
@@ -45,22 +52,22 @@ runs:
                     "widgets": [
                       {
                         "decoratedText": {
-                          "text": "<font color=\"${{ (inputs.status == 'success' && '#31AF91') || '#FF0B0B' }}\"><b>${{ inputs.status }}</b></font>"
+                          "text": $status
                         }
                       },
                       {
                         "textParagraph": {
-                          "text": "${{ inputs.message }}"
+                          "text": $message
                         }
                       },
                       {
                         "buttonList": {
                           "buttons": [
                             {
-                              "text": "Go to ${{ github.job }}",
+                              "text": $job,
                               "onClick": {
                                 "openLink": {
-                                  "url": "${{ inputs.url && inputs.url || steps.url.outputs.url }}"
+                                  "url": $url
                                 }
                               }
                             }
@@ -75,3 +82,11 @@ runs:
           ]
         }' | curl -X POST -H "Content-Type: application/json" -d @- "${{ inputs.webhook-url }}"
       shell: bash
+      env:
+        STATUS: ${{ inputs.status }}
+        COLOR: ${{ (inputs.status == 'success' && '#31AF91') || '#FF0B0B' }}
+        TITLE: ${{ inputs.title && inputs.title || github.repository }}
+        SUBTITLE: ${{ inputs.subtitle && inputs.subtitle || github.job }}
+        MESSAGE: ${{ inputs.message }}
+        JOB: "Go to ${{ github.job }}"
+        URL: "${{ inputs.url && inputs.url || steps.url.outputs.url }}"
