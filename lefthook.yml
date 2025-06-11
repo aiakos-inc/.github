@@ -3,6 +3,15 @@ rc: ~/.lefthookrc
 pre-commit:
   parallel: true
   commands:
+    pinact:
+      glob: ".github/**/*.{yaml,yml}"
+      run: pinact run {staged_files}
+      stage_fixed: true
+    ghalint:
+      glob: ".github/workflows/*.{yaml,yml}"
+      run: ghalint run {staged_files}
+      stage_fixed: true
     actionlint:
-      glob: ".github/workflows/*.yml"
+      glob: ".github/workflows/*.{yaml,yml}"
       run: actionlint {staged_files}
+      stage_fixed: true

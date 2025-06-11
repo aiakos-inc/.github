@@ -9,16 +9,24 @@ concurrency:
 
 jobs:
   semver:
+    permissions:
+      contents: read
+      pull-requests: write
     uses: ./.github/workflows/semver.yml
     with:
       dry_run: true
       bump: prepatch
-    secrets: inherit
 
   token:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/token
         with:
           app_id: ${{ vars.APP_ID }}
@@ -26,8 +34,14 @@ jobs:
 
   actionlint:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - run: |
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
           ./actionlint -color
